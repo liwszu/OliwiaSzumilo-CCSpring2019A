@@ -1,51 +1,55 @@
+var acceleration = 0.002; // acceleration of flake
+var numSnow = 1500; // number of snowflakes
+var snowflakeArray = []; // stores the flakes
+
 function setup() {
-  createCanvas(710, 400);
-  this.body = new Body(width/2, height/2, 100, 100);
+  createCanvas(640, 480); // draw canvas
+  // if there are less than 1500 snowflakes then make more
+  for (i = 0; i < numSnow; i++) {
+    snowflakeArray.push(new Snow()); // add the snow flake to the array
+  }
 }
 
 function draw() {
-  background(175, 238, 238);
-  fill(255,215,0);
-  ellipse(width - 600, height/8, 100, 100);
-  fill(205,192,176);
-  rect(0 , height/1.65, width*2, height/3);
-  this.body.display();
-  
+  clear();
+  background(80,85,250); // set background to blue
+  snowflakeArray.forEach(function(s) {
+    s.update(); // draws and updates snow flakes
+  });
 }
 
+function Snow() {
+  this.offScreenX = function() {
+    this.x = random() * width;
+  }; // draws the snowflakes off of the screen so they look like they're actually falling from the sky
+  this.offScreenY = function() {
+    this.y = -random() * height / 5; 
+  };
 
+  this.offScreenX();
+  this.y = random() * height;
 
-let Body = function(x,y,w,h) {
-  this.x = x;
-  this.y = y;
-  this.w = w;
-  this.h = h;
-  
-  
+  this.velocity = random();
+  this.r = random(1,3); // set radius
+
+  this.update = function() {
+    this.draw(); // call draw
+    this.snowfall(); // allows them to move
+  };
+
+  this.draw = function() {
+    ellipse(this.x, this.y, this.r); // draw the flake
+    stroke(250); // make the flake white
+  };
+
+  this.snowfall = function() {
+    if (this.y < height) {
+      this.y += this.velocity; //update location
+      this.velocity += acceleration; //speed it up
+    } else {
+      this.velocity = random(); // random velocity
+      this.offScreenY(); // it's going to start offscreen
+      this.offScreenX();
+    }
+  };
 }
-Body.prototype.display = function() {
-  
-    this.x = 5; //keep human on page
-    ellipseMode(CENTER);
-    rectMode(CENTER);
-    //torso
-    stroke(0);
-    fill(0);
-    rect(this.x,this.y,this.w/3,this.h/2);
-    // head
-    stroke(0);
-    fill(0);
-    ellipse(this.x,this.y-this.h/1.8,this.w/3,this.h/2);
-    // legs
-    stroke(0);
-    line(this.x - this.w/8,this.y + this.h/3,this.x - this.w/4,this.y + this.h/2 + 8);
-    line(this.x + this.w/8,this.y + this.h/3,this.x + this.w/4,this.y + this.h/2 + 8);
-    // arms
-    stroke(0);
-    line(this.x - this.w/3, this.y - this.h/2, this.x-this.w/6, this.y - this.h/8);
-    line(this.x + this.w/3, this.y - this.h/2, this.x+this.w/6, this.y - this.h/8);
-  
-
-}
-
-
